@@ -1,0 +1,23 @@
+const String registerUrl = 'register';
+const String loginUrl = 'parent_login';
+const String profileUrl = 'p_profile';
+const String updateProfile = 'profile/info';
+const String sendEmailUrl = 'forget-pass-user';
+const String tableUrl = 'section_table_by_day_for_parent';
+const String resetPasswordUrl = 'password/forget';
+const String logOutUrl = 'logout';
+const String absenceUrl = 'parent_abcence';
+const String degreesUrl = 'degreesforparent';
+const String rateUrl = 'user_rates';
+const String getRateUrl = 'user_rates';
+const String changePasswordUrl = 'change_password';
+const String homeUrl = 'parent_home';
+const String contactUsUrl = 'contactus';
+const String schoolUrl = 'school/1';
+const String updateProfileUrl = 'update_profile/0';
+const String trainPlanUrl = 'plans/ar/trainings';
+const String foodPlanUrl = 'plans/ar/food';
+const String trainingOfferUrl = 'trainings/ar/0/0';
+const String makeRequestUrl = 'user-training-order';
+
+String? imageLink = 'https://school.masool.net/uploads/';
