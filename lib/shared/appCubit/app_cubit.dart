@@ -72,6 +72,7 @@ class AppCubit extends Cubit<AppStates> {
     return randomColor;
   }
 
+//
   //buttom nav bar
   List<Widget> buttonWidget(index) => [
         Column(
