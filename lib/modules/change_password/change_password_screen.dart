@@ -31,8 +31,8 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
           if (state.model?.result == true) {
             showToast(
                 text: state.model?.errorMessage, state: ToastStates.success);
-            AppCubit.get(context).currentIndex = 2;
-            navigateTo(context, LayoutScreen());
+            Navigator.pop(context);
+            Navigator.pop(context);
           } else {
             showToast(
                 text: state.model?.errorMessage, state: ToastStates.error);
@@ -81,19 +81,26 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                             EdgeInsets.symmetric(horizontal: screenHeight / 35),
                         child: Column(
                           children: [
-                            const Image(
+                            Image(
                               image: AssetImage(
-                                'assets/images/reset.png',
+                                AppCubit.get(context).profile?.data?.gender ==
+                                        '2'
+                                    ? 'assets/images/Key-rafiki.png'
+                                    : 'assets/images/reset.png',
                               ),
-                              height: 200,
-                              width: 300,
-                              fit: BoxFit.cover,
+                              height: 250,
+                              width: 400,
+                              fit:
+                                  AppCubit.get(context).profile?.data?.gender ==
+                                          '2'
+                                      ? BoxFit.cover
+                                      : BoxFit.contain,
                             ),
                             const SizedBox(
                               height: 20,
                             ),
                             const Text(
-                              '''Change Password ''',
+                              '''تغيير كلمة السر''',
                               style: TextStyle(
                                   fontSize: 22, fontWeight: FontWeight.w700),
                             ),
@@ -106,13 +113,13 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                               ),
                               elevation: 1.5,
                               child: defaultTextFieldWithCustomIconImage(
-                                  lable: 'Old Password',
+                                  lable: 'كلمة السر القديمة',
                                   controller: oldPasswordController,
                                   prefix: const ImageIcon(
                                       AssetImage('assets/images/key.png')),
                                   validate: (String value) {
                                     if (value.isEmpty) {
-                                      return 'old password can\'t be empty';
+                                      return 'يجب ان تدخل كلمةالسر القديمة';
                                     }
                                   },
                                   context: context,
@@ -128,7 +135,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                               elevation: 1.5,
                               child: defaultTextFieldWithCustomIconImage(
                                   controller: newPasswordController,
-                                  lable: 'New Password',
+                                  lable: 'كلمة السر الجديدة',
                                   prefix: const ImageIcon(
                                       AssetImage('assets/images/padlock.png')),
                                   suffix: AppCubit.get(context).suffix,
@@ -139,7 +146,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                   isSecure: AppCubit.get(context).isPass,
                                   validate: (String value) {
                                     if (value.isEmpty) {
-                                      return 'new Password can\'t be empty';
+                                      return 'يجب ان تدخل كلمة السر الجديده';
                                     }
                                   },
                                   context: context,
@@ -155,7 +162,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                               elevation: 1.5,
                               child: defaultTextFieldWithCustomIconImage(
                                   controller: confirmNewPasswordController,
-                                  lable: 'Confirm Password',
+                                  lable: 'تأكيد كلمة السر',
                                   prefix: const ImageIcon(AssetImage(
                                     'assets/images/padlock.png',
                                   )),
@@ -167,7 +174,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                   isSecure: AppCubit.get(context).isPasss,
                                   validate: (String value) {
                                     if (value.isEmpty) {
-                                      return 'You should Confirm your password';
+                                      return 'يجب ان تأكد كلمة السر';
                                     }
                                   },
                                   context: context,
@@ -194,7 +201,7 @@ class _ChangePasswordScreenState extends State<ChangePasswordScreen> {
                                                   .text);
                                     } else {}
                                   },
-                                  text: 'Update'),
+                                  text: 'تحديث'),
                               fallback: (context) => const Center(
                                   child: CircularProgressIndicator()),
                             ),

@@ -2,10 +2,8 @@ import 'package:conditional_builder_null_safety/conditional_builder_null_safety.
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:parent_app/modules/absence/absence_screen.dart';
-import 'package:parent_app/network/endpoints.dart';
 import 'package:parent_app/shared/appCubit/app_cubit.dart';
 import 'package:parent_app/shared/appCubit/app_states.dart';
-import 'package:parent_app/shared/colors.dart';
 import 'package:parent_app/shared/components/components.dart';
 
 class ChildrenScreen extends StatelessWidget {
@@ -78,7 +76,32 @@ class ChildrenScreen extends StatelessWidget {
                                                         []));
                                           },
                                           child: buildAbsenceItem(
+                                            color: (model
+                                                            ?.data?[index]
+                                                            .studentAbcence
+                                                            ?.length ??
+                                                        0) <=
+                                                    10
+                                                ? Colors.grey
+                                                : ((model
+                                                                    ?.data?[
+                                                                        index]
+                                                                    .studentAbcence
+                                                                    ?.length ??
+                                                                0) >
+                                                            10 &&
+                                                        (model
+                                                                    ?.data?[
+                                                                        index]
+                                                                    .studentAbcence
+                                                                    ?.length ??
+                                                                0) <=
+                                                            15)
+                                                    ? Colors.amber
+                                                    : Colors.red,
+                                            id: model?.data?[index].id,
                                             image: model?.data?[index].image,
+                                            isAbsence: true,
                                             context: context,
                                             reason:
                                                 model?.data?[index].name ?? '',

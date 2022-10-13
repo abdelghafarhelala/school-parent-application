@@ -10,6 +10,7 @@ import 'package:http_parser/http_parser.dart';
 import 'package:iconsax/iconsax.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:parent_app/models/absence/absence_model.dart';
+import 'package:parent_app/models/absence_request/absence_request_model.dart';
 import 'package:parent_app/models/contact/contact_model.dart';
 import 'package:parent_app/models/degrees/degrees_model.dart';
 import 'package:parent_app/models/home/home_model.dart';
@@ -62,6 +63,8 @@ class AppCubit extends Cubit<AppStates> {
     Colors.blue
   ];
   final random = Random();
+  var absenceController = TextEditingController();
+  var dateController = TextEditingController();
 
 // get random color
   Color getRandomColor() {
@@ -254,32 +257,6 @@ class AppCubit extends Cubit<AppStates> {
     });
   }
 
-  UserModel? user;
-  void updateUserData({
-    required String email,
-    required String phone,
-    required String name,
-    required String jobTitle,
-    required int departmentId,
-  }) {
-    emit(AppUpdateUserDataLoadingState());
-    DioHelper.putData(url: '', token: token, data: {
-      'email': email,
-      'mobile_number': phone,
-      'name': name,
-      'department_id': departmentId,
-      'job_title': jobTitle,
-    }).then((value) {
-      user = UserModel.fromJson(value.data);
-      getUserData();
-
-      emit(AppUpdateUserDataSuccessState(user));
-    }).catchError((error) {
-      emit(AppUpdateUserDataErrorState());
-      print(error.toString());
-    });
-  }
-
   void logOut(context) {
     CacheHelper.removeData(key: 'token').then((value) {
       if (value) {
@@ -450,11 +427,9 @@ class AppCubit extends Cubit<AppStates> {
     required String email,
     required String phone,
     required String name,
-    required int weight,
-    required String illnesses,
-    required String notes,
+    required int nationalId,
     required String sex,
-    required int hight,
+    required String address,
   }) {
     emit(AppUpdateProfileLoadingState());
     DioHelper.postData(
@@ -463,14 +438,13 @@ class AppCubit extends Cubit<AppStates> {
               'email': email,
               'mobile': phone,
               'name': name,
-              'length': hight,
-              'weight': weight,
-              'illnesses': illnesses,
-              'notes': notes,
-              'sex': sex,
+              'address': address,
+              'national_id': nationalId.toString(),
+              'gender': sex,
             },
             token: token)
         .then((value) {
+      print('------------------');
       updateProfileModel = UpdateProfileModel.fromJson(value.data);
       getUserData();
       emit(AppUpdateProfileSuccessState(updateProfileModel!));
@@ -485,30 +459,26 @@ class AppCubit extends Cubit<AppStates> {
     required String email,
     required String phone,
     required String name,
-    required int weight,
-    required String illnesses,
-    required String notes,
+    required int nationalId,
     required String sex,
-    required int hight,
+    required String address,
   }) async {
     String? fileName = postImage?.path.split('/').last;
     FormData formData = FormData.fromMap({
-      "profile_photo_path": await MultipartFile.fromFile(
+      "image": await MultipartFile.fromFile(
         postImage?.path ?? '',
         filename: fileName,
         contentType: MediaType("image", "jpeg"), //important
       ),
-      'email': email,
+      // 'email': email,
       'mobile': phone,
       'name': name,
-      'length': hight,
-      'weight': weight,
-      'illnesses': illnesses,
-      'notes': notes,
-      'sex': sex,
+      'address': address,
+      'national_id': nationalId.toString(),
+      'gender': sex,
     });
     emit(AppUpdateProfileLoadingState());
-    Dio dio = Dio()..options.baseUrl = 'https://gym.masool.net/api/';
+    Dio dio = Dio()..options.baseUrl = 'https://school.masool.net/api/';
     dio
         .post(updateProfileUrl,
             data: formData,
@@ -538,10 +508,8 @@ class AppCubit extends Cubit<AppStates> {
 
 //----------------------------update profile controllers --------------------------//
   var updateEmailController = TextEditingController();
-  var updateHightController = TextEditingController();
-  var updateIllController = TextEditingController();
-  var updateDetailsController = TextEditingController();
-  var updateWightController = TextEditingController();
+  var updateNationalIdController = TextEditingController();
+  var updateAddressController = TextEditingController();
   var updateNameController = TextEditingController();
   var updatePhoneController = TextEditingController();
   var formKeyUpdate = GlobalKey<FormState>();
@@ -550,13 +518,13 @@ class AppCubit extends Cubit<AppStates> {
 //-------------------- get data used in profile ---------------------//
   void getData() {
     // updateDetailsController.text = profile?.data?.notes ?? '';
-    // updateEmailController.text = profile?.data?.email ?? '';
-    // updatePhoneController.text = profile?.data?.mobile ?? '';
-    // updateHightController.text = profile?.data?.length.toString() ?? '';
-    // updateWightController.text = profile?.data?.weight.toString() ?? '';
-    // updateNameController.text = profile?.data?.name ?? '';
-    // updateIllController.text = profile?.data?.illnesses ?? '';
-    // gender = profile?.data?.sex;
+    updateEmailController.text = profile?.data?.email ?? '';
+    updatePhoneController.text = profile?.data?.mobile ?? '';
+    updateNationalIdController.text =
+        profile?.data?.nationalId.toString() ?? '';
+    updateAddressController.text = profile?.data?.address.toString() ?? '';
+    updateNameController.text = profile?.data?.name ?? '';
+    gender = profile?.data?.gender;
   }
 
 //----------------------- get student absence -----------------------//
@@ -635,6 +603,34 @@ class AppCubit extends Cubit<AppStates> {
       emit(AppGetHomeDataSuccessState(homeModel));
     }).catchError((error) {
       emit(AppGetHomeDataErrorState());
+      print(error.toString());
+    });
+  }
+
+//post request absence
+  AbsenceRequestModel? absenceRequestModel;
+  void postAbsenceRequestData({
+    required int studentId,
+  }) {
+    emit(AppPostAbsenceRequestDataLoadingState());
+    print(dateController.text);
+    print(absenceController.text);
+    print(studentId);
+    DioHelper.postData(
+      url: absenceRequestUrl,
+      token: token,
+      data: {
+        "student_id": studentId,
+        "date": dateController.text,
+        "reason": absenceController.text,
+      },
+    ).then((value) {
+      absenceRequestModel = AbsenceRequestModel.fromJson(value.data);
+      print(absenceRequestModel?.errorMessage);
+      getStudentAbsenceData();
+      emit(AppPostAbsenceRequestDataSuccessState(absenceRequestModel));
+    }).catchError((error) {
+      emit(AppPostAbsenceRequestDataErrorState());
       print(error.toString());
     });
   }

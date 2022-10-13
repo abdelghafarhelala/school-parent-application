@@ -29,7 +29,10 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
         if (state is AppUpdateProfileSuccessState) {
           if (state.model.result!) {
             showToast(
-                text: state.model.errorMessage, state: ToastStates.success);
+                text: 'تم تعديل البيانات بنجاح', state: ToastStates.success);
+            print(state.model.data?.name);
+            Navigator.pop(context);
+            Navigator.pop(context);
           } else {
             showToast(text: state.model.errorMessage, state: ToastStates.error);
           }
@@ -42,12 +45,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
         return Scaffold(
           body: AnnotatedRegion<SystemUiOverlayStyle>(
             value: const SystemUiOverlayStyle(
-              // For Android.
-              // Use [light] for white status bar and [dark] for black status bar.
               statusBarIconBrightness: Brightness.dark,
               statusBarColor: Colors.white,
-              // For iOS.
-              // Use [dark] for white status bar and [light] for black status bar.
               statusBarBrightness: Brightness.dark,
             ),
             child: SingleChildScrollView(
@@ -59,35 +58,31 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                       const SizedBox(
                         height: 40,
                       ),
-                      // Image.asset(
-                      //   'assets/images/register.jpg',
-                      //   height: 170,
-                      //   width: double.infinity,
-                      //   fit: BoxFit.cover,
-                      // ),
                       Row(
-                        mainAxisAlignment: MainAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
                           IconButton(
                               onPressed: () {
                                 Navigator.pop(context);
                               },
                               icon: Icon(Icons.arrow_back)),
+                          const SizedBox(
+                            height: 12,
+                          ),
+                          // Spacer(),
+
+                          Text(
+                            'تعديل البيانات الشخصيه',
+                            style: Theme.of(context)
+                                .textTheme
+                                .subtitle2!
+                                .copyWith(fontSize: 24),
+                          ),
                         ],
                       ),
-                      const SizedBox(
-                        height: 12,
-                      ),
-                      Text(
-                        'تعديل البيانات الشخصيه',
-                        style: Theme.of(context)
-                            .textTheme
-                            .subtitle2!
-                            .copyWith(fontSize: 24),
-                      ),
                       Padding(
-                        padding:
-                            EdgeInsets.symmetric(horizontal: screenHeight / 34),
+                        padding: EdgeInsets.symmetric(
+                            horizontal: screenHeight / 34, vertical: 12),
                         child: Column(
                           children: [
                             Stack(
@@ -119,7 +114,8 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                           AppCubit.get(context)
                                               .picProfileImage();
                                         },
-                                        icon: Icon(Icons.camera_alt_sharp),
+                                        icon:
+                                            const Icon(Icons.camera_alt_sharp),
                                         color: Colors.black,
                                       ),
                                     )
@@ -211,13 +207,13 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                               ),
                               elevation: 1.5,
                               child: defaultTextField(
-                                  lable: 'الطول',
+                                  lable: 'الرقم القومي',
                                   controller: AppCubit.get(context)
-                                      .updateHightController,
+                                      .updateNationalIdController,
                                   prefix: Icons.height,
                                   validate: (String value) {
                                     if (value.isEmpty) {
-                                      return 'يجب أن تدخل الطول';
+                                      return 'يجب أن تدخل الرقم القومي';
                                     }
                                   },
                                   context: context,
@@ -232,9 +228,9 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                               ),
                               elevation: 1.5,
                               child: defaultTextField(
-                                  lable: 'الوزن',
+                                  lable: 'العنوان',
                                   controller: AppCubit.get(context)
-                                      .updateWightController,
+                                      .updateAddressController,
                                   prefix: Icons.balance,
                                   validate: (String value) {
                                     if (value.isEmpty) {
@@ -247,47 +243,12 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                             const SizedBox(
                               height: 5,
                             ),
-                            Card(
-                              shape: BeveledRectangleBorder(
-                                borderRadius: BorderRadius.circular(4.0),
-                              ),
-                              elevation: 1.5,
-                              child: defaultTextFieldWithCustomIconImage(
-                                  lable: 'الأمراض',
-                                  controller:
-                                      AppCubit.get(context).updateIllController,
-                                  prefix: const ImageIcon(
-                                      AssetImage("assets/images/sick.png")),
-                                  validate: (String value) {},
-                                  context: context,
-                                  type: TextInputType.text),
-                            ),
-                            const SizedBox(
-                              height: 5,
-                            ),
-                            Card(
-                              shape: BeveledRectangleBorder(
-                                borderRadius: BorderRadius.circular(4.0),
-                              ),
-                              elevation: 1.5,
-                              child: defaultTextField(
-                                  lable: 'الملاحظات',
-                                  controller: AppCubit.get(context)
-                                      .updateDetailsController,
-                                  prefix: Icons.info,
-                                  validate: (String value) {},
-                                  context: context,
-                                  type: TextInputType.text),
-                            ),
-                            const SizedBox(
-                              height: 5,
-                            ),
                             Row(
                               children: [
                                 Expanded(
                                   child: RadioListTile(
                                     title: Text("ذكر"),
-                                    value: "A",
+                                    value: "1",
                                     groupValue: AppCubit.get(context).gender,
                                     onChanged: (value) {
                                       setState(() {
@@ -300,7 +261,7 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                 Expanded(
                                   child: RadioListTile(
                                     title: Text("انثي"),
-                                    value: "B",
+                                    value: "2",
                                     groupValue: AppCubit.get(context).gender,
                                     onChanged: (value) {
                                       setState(() {
@@ -335,51 +296,45 @@ class _UpdateProfileScreenState extends State<UpdateProfileScreen> {
                                             name: AppCubit.get(context)
                                                 .updateNameController
                                                 .text,
-                                            hight: int.parse(
-                                                AppCubit.get(context)
-                                                    .updateHightController
-                                                    .text),
-                                            illnesses: AppCubit.get(context)
-                                                .updateIllController
-                                                .text,
-                                            notes: AppCubit.get(context)
-                                                .updateDetailsController
+                                            address: AppCubit.get(context)
+                                                .updateAddressController
                                                 .text,
                                             sex: AppCubit.get(context).gender ??
-                                                'A',
-                                            weight: int.parse(
+                                                '1',
+                                            nationalId: int.parse(
                                                 AppCubit.get(context)
-                                                    .updateWightController
+                                                    .updateNationalIdController
                                                     .text));
                                       } else {
                                         AppCubit.get(context)
                                             .updateProfileWithoutImage(
-                                                email: AppCubit.get(context)
-                                                    .updateEmailController
-                                                    .text,
-                                                phone: AppCubit.get(context)
-                                                    .updatePhoneController
-                                                    .text,
-                                                name: AppCubit.get(context)
-                                                    .updateNameController
-                                                    .text,
-                                                hight:
-                                                    int.parse(AppCubit.get(context)
-                                                        .updateHightController
-                                                        .text),
-                                                illnesses: AppCubit.get(context)
-                                                    .updateIllController
-                                                    .text,
-                                                notes: AppCubit.get(context)
-                                                    .updateDetailsController
-                                                    .text,
+                                                email:
+                                                    AppCubit
+                                                            .get(context)
+                                                        .updateEmailController
+                                                        .text,
+                                                phone:
+                                                    AppCubit
+                                                            .get(context)
+                                                        .updatePhoneController
+                                                        .text,
+                                                name:
+                                                    AppCubit
+                                                            .get(context)
+                                                        .updateNameController
+                                                        .text,
+                                                address:
+                                                    AppCubit.get(
+                                                            context)
+                                                        .updateAddressController
+                                                        .text,
                                                 sex: AppCubit.get(context)
                                                         .gender ??
-                                                    'A',
-                                                weight: int.parse(
-                                                    AppCubit.get(context)
-                                                        .updateWightController
-                                                        .text));
+                                                    '1',
+                                                nationalId: int.parse(AppCubit
+                                                        .get(context)
+                                                    .updateNationalIdController
+                                                    .text));
                                       }
                                     } else {}
                                   },

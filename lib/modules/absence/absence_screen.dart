@@ -15,7 +15,6 @@ class AbsenceScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var model = AppCubit.get(context).absenceModel;
     double screenHight = MediaQuery.of(context).size.height;
     return BlocConsumer<AppCubit, AppStates>(
       listener: (context, state) {},
@@ -48,13 +47,13 @@ class AbsenceScreen extends StatelessWidget {
                             Row(
                               children: const [
                                 Text(
-                                  'Absent ',
+                                  'أيام ',
                                   style: TextStyle(
                                       fontSize: 22,
                                       fontWeight: FontWeight.bold),
                                 ),
                                 Text(
-                                  'days ',
+                                  'الغياب ',
                                   style: TextStyle(
                                       fontSize: 22,
                                       fontWeight: FontWeight.bold,
@@ -71,6 +70,7 @@ class AbsenceScreen extends StatelessWidget {
                                     physics: const BouncingScrollPhysics(),
                                     itemBuilder: (context, index) =>
                                         buildAbsenceItem(
+                                          isAbsence: false,
                                           // image: model?.data?[index].image,
                                           context: context,
                                           reason:

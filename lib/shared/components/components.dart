@@ -1,13 +1,18 @@
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:conditional_builder_null_safety/conditional_builder_null_safety.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:hexcolor/hexcolor.dart';
 import 'package:iconsax/iconsax.dart';
+import 'package:intl/intl.dart';
+
 import 'package:parent_app/modules/home/home_screen.dart';
 import 'package:parent_app/modules/myDrawer/myDrawer.dart';
 import 'package:parent_app/network/endpoints.dart';
 import 'package:parent_app/shared/appCubit/app_cubit.dart';
+import 'package:parent_app/shared/appCubit/app_states.dart';
 import 'package:parent_app/shared/colors.dart';
 
 void navigateTo(context, widget) => Navigator.push(
@@ -524,56 +529,210 @@ Widget buildAbsenceItem(
         {required context,
         required String reason,
         required String date,
-        String? image}) =>
-    Card(
-      color: Colors.grey[100],
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-      clipBehavior: Clip.antiAlias,
-      child: Row(
-        children: [
-          Container(
-            height: 120,
-            width: 120,
-            decoration: BoxDecoration(
-                image: DecorationImage(
-                    fit: BoxFit.fill,
-                    image: NetworkImage(image == null
-                        ? 'https://img.freepik.com/free-vector/red-prohibited-sign-no-icon-warning-stop-symbol-safety-danger-isolated-vector-illustration_56104-912.jpg?size=626&ext=jpg&uid=R76996913&ga=GA1.2.1634405249.1648830357'
-                        : imageLink! + image))),
-          ),
-          const SizedBox(
-            width: 1,
-          ),
-          Container(
-            height: 120,
-            width: 1,
-            color: Colors.grey[300],
-          ),
-          const SizedBox(
-            width: 10,
-          ),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Text(
-                  reason,
-                  style: Theme.of(context).textTheme.headline2,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+        required bool isAbsence,
+        Color? color,
+        String? image,
+        int? id}) =>
+    Stack(
+      alignment: Alignment.topLeft,
+      children: [
+        Card(
+          color: Colors.grey[100],
+          elevation: 4,
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          clipBehavior: Clip.antiAlias,
+          child: Row(
+            children: [
+              Container(
+                height: 120,
+                width: 120,
+                decoration: BoxDecoration(
+                    image: DecorationImage(
+                        fit: BoxFit.fill,
+                        image: NetworkImage(image == null
+                            ? 'https://img.freepik.com/free-vector/red-prohibited-sign-no-icon-warning-stop-symbol-safety-danger-isolated-vector-illustration_56104-912.jpg?size=626&ext=jpg&uid=R76996913&ga=GA1.2.1634405249.1648830357'
+                            : imageLink! + image))),
+              ),
+              const SizedBox(
+                width: 1,
+              ),
+              Container(
+                height: 120,
+                width: 1,
+                color: Colors.grey[300],
+              ),
+              const SizedBox(
+                width: 10,
+              ),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    Text(
+                      reason,
+                      style: Theme.of(context).textTheme.headline2,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    const SizedBox(
+                      height: 4,
+                    ),
+                    Text(
+                      date,
+                      style: isAbsence == true
+                          ? Theme.of(context)
+                              .textTheme
+                              .caption!
+                              .copyWith(color: color)
+                          : Theme.of(context).textTheme.caption,
+                    ),
+                  ],
                 ),
-                const SizedBox(
-                  height: 4,
-                ),
-                Text(
-                  date,
-                  style: Theme.of(context).textTheme.caption,
-                ),
-              ],
+              ),
+            ],
+          ),
+        ),
+        if (isAbsence)
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: MaterialButton(
+              onPressed: () {
+                AppCubit.get(context).absenceController.text = '';
+                AppCubit.get(context).dateController.text = '';
+                showDialog(
+                  context: context,
+                  builder: (context) => buildDialog(context, id ?? 0),
+                );
+              },
+              color: primaryColor,
+              shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10)),
+              padding: EdgeInsets.zero,
+              child: const Text('طلب غياب'),
             ),
           )
-        ],
-      ),
+      ],
     );
+
+Widget buildDialog(context, int id) {
+  return BlocConsumer<AppCubit, AppStates>(
+    listener: (context, state) {
+      if (state is AppPostAbsenceRequestDataSuccessState) {
+        if (state.model?.result == true) {
+          showToast(
+              text: state.model?.errorMessage, state: ToastStates.success);
+          Navigator.pop(context);
+          // Navigator.pop(context);
+          AppCubit.get(context).currentIndex = 2;
+          AppCubit.get(context).controller.animateToPage(2,
+              duration: const Duration(milliseconds: 300), curve: Curves.ease);
+        } else {
+          showToast(text: state.model?.errorMessage, state: ToastStates.error);
+        }
+      }
+    },
+    builder: (context, state) {
+      return Dialog(
+        insetAnimationCurve: Curves.linearToEaseOut,
+        shape:
+            RoundedRectangleBorder(borderRadius: BorderRadius.circular(12.0)),
+        child: Stack(
+          alignment: Alignment.topRight,
+          children: [
+            Container(
+              padding: EdgeInsets.all(20),
+              height: 400,
+              width: 480,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  // const SizedBox(
+                  //   height: 20,
+                  // ),
+                  Text('طلب الغياب',
+                      style: Theme.of(context).textTheme.headline1),
+                  const SizedBox(
+                    height: 20,
+                  ),
+
+                  TextFormField(
+                    controller: AppCubit.get(context).dateController,
+                    decoration: InputDecoration(
+                      prefixIcon: const Icon(Icons.date_range),
+                      label: const Text(
+                        'التاريخ',
+                        style: TextStyle(fontSize: 16),
+                      ),
+                      border: const OutlineInputBorder(),
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(color: Colors.grey[300]!)),
+                    ),
+                    onTap: () {
+                      showDatePicker(
+                              context: context,
+                              firstDate: DateTime.now(),
+                              lastDate: DateTime(2025),
+                              initialDate: DateTime.now())
+                          .then((value) {
+                        AppCubit.get(context).dateController.text =
+                            DateFormat('yyyy-MM-dd').format(value!).toString();
+                      });
+                    },
+                  ),
+                  const SizedBox(
+                    height: 15,
+                  ),
+                  TextFormField(
+                    style: const TextStyle(fontSize: 15),
+                    maxLines: 4,
+                    controller: AppCubit.get(context).absenceController,
+                    keyboardType: TextInputType.text,
+                    decoration: InputDecoration(
+                      hintStyle: const TextStyle(fontSize: 16),
+                      hintText: 'السبب ....',
+                      border: const OutlineInputBorder(),
+                      enabledBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: BorderSide(color: Colors.grey[300]!)),
+                    ),
+                  ),
+
+                  const SizedBox(
+                    height: 10,
+                  ),
+
+                  ConditionalBuilder(
+                    condition: state is! AppPostAbsenceRequestDataLoadingState,
+                    fallback: (context) => const CircularProgressIndicator(),
+                    builder: (context) => MaterialButton(
+                      minWidth: 220,
+                      height: 42,
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(9)),
+                      clipBehavior: Clip.antiAlias,
+                      color: primaryColor,
+                      onPressed: () {
+                        AppCubit.get(context)
+                            .postAbsenceRequestData(studentId: id);
+                      },
+                      child: const Text(' ارسل الطلب',
+                          style: TextStyle(color: Colors.white, fontSize: 18)),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            IconButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                icon: const Icon(Icons.close))
+          ],
+        ),
+      );
+    },
+  );
+}

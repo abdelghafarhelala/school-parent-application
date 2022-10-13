@@ -74,6 +74,7 @@ class ChildrenDegreeScreen extends StatelessWidget {
                                                 ));
                                           },
                                           child: buildAbsenceItem(
+                                            isAbsence: false,
                                             image: model?.data?[index].image,
                                             context: context,
                                             reason:

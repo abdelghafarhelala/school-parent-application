@@ -1,4 +1,5 @@
 import 'package:parent_app/models/absence/absence_model.dart';
+import 'package:parent_app/models/absence_request/absence_request_model.dart';
 import 'package:parent_app/models/contact/contact_model.dart';
 import 'package:parent_app/models/degrees/degrees_model.dart';
 import 'package:parent_app/models/home/home_model.dart';
@@ -191,3 +192,14 @@ class AppGetSchoolDataSuccessState extends AppStates {
 class AppGetSchoolDataErrorState extends AppStates {}
 
 class AppGetSchoolDataLoadingState extends AppStates {}
+
+//---------------- get school data -------------------------//
+class AppPostAbsenceRequestDataSuccessState extends AppStates {
+  final AbsenceRequestModel? model;
+
+  AppPostAbsenceRequestDataSuccessState(this.model);
+}
+
+class AppPostAbsenceRequestDataErrorState extends AppStates {}
+
+class AppPostAbsenceRequestDataLoadingState extends AppStates {}

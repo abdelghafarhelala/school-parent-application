@@ -169,44 +169,54 @@ class HomeScreen extends StatelessWidget {
                               height: 10,
                             ),
                             //------------- Horizontal List of Classes of the current day----------//
-                            SizedBox(
-                              height: 168,
-                              child: ListView.separated(
-                                  physics: const BouncingScrollPhysics(),
-                                  shrinkWrap: true,
-                                  scrollDirection: Axis.horizontal,
-                                  itemBuilder: (context, index) => SizedBox(
-                                      width: 250,
-                                      child: buildClassItem(
-                                          image: scheduleModel?.data?[0].classesClassRoomSection?[index].subject?.image ==
-                                                  null
-                                              ? 'https://img.freepik.com/free-vector/cairo-egypt-skyline-with-world-famous-landmarks_107791-1528.jpg?w=1380&t=st=1664965896~exp=1664966496~hmac=8e61090430b46c34a4f29633dd6ff064fc09c7a5f71191b2d76a15dfc84a6d36'
-                                              : imageLink! +
-                                                  scheduleModel!
-                                                      .data![0]
-                                                      .classesClassRoomSection![
-                                                          index]
-                                                      .subject!
-                                                      .image!,
-                                          isClass: true,
-                                          date: scheduleModel
-                                                  ?.data?[0]
-                                                  .classesClassRoomSection?[
-                                                      index]
-                                                  .section
-                                                  ?.timeStart ??
-                                              '',
-                                          subject: scheduleModel
-                                                  ?.data?[0]
-                                                  .classesClassRoomSection?[index]
-                                                  .subject
-                                                  ?.name ??
-                                              '')),
-                                  separatorBuilder: (context, index) => const SizedBox(
-                                        width: 5,
-                                      ),
-                                  itemCount: (scheduleModel?.data?[0].classesClassRoomSection?.length ?? 0)),
-                            ),
+                            if ((scheduleModel?.data?[0].classesClassRoomSection
+                                        ?.length ??
+                                    0) >
+                                0)
+                              SizedBox(
+                                height: 168,
+                                child: ListView.separated(
+                                    physics: const BouncingScrollPhysics(),
+                                    shrinkWrap: true,
+                                    scrollDirection: Axis.horizontal,
+                                    itemBuilder: (context, index) => SizedBox(
+                                        width: 250,
+                                        child: buildClassItem(
+                                            image: scheduleModel?.data?[0].classesClassRoomSection?[index].subject?.image ==
+                                                    null
+                                                ? 'https://img.freepik.com/free-vector/cairo-egypt-skyline-with-world-famous-landmarks_107791-1528.jpg?w=1380&t=st=1664965896~exp=1664966496~hmac=8e61090430b46c34a4f29633dd6ff064fc09c7a5f71191b2d76a15dfc84a6d36'
+                                                : imageLink! +
+                                                    scheduleModel!
+                                                        .data![0]
+                                                        .classesClassRoomSection![
+                                                            index]
+                                                        .subject!
+                                                        .image!,
+                                            isClass: true,
+                                            date: scheduleModel
+                                                    ?.data?[0]
+                                                    .classesClassRoomSection?[
+                                                        index]
+                                                    .section
+                                                    ?.timeStart ??
+                                                '',
+                                            subject: scheduleModel
+                                                    ?.data?[0]
+                                                    .classesClassRoomSection?[index]
+                                                    .subject
+                                                    ?.name ??
+                                                '')),
+                                    separatorBuilder: (context, index) => const SizedBox(
+                                          width: 5,
+                                        ),
+                                    itemCount: (scheduleModel?.data?[0].classesClassRoomSection?.length ?? 0)),
+                              ),
+                            if ((scheduleModel?.data?[0].classesClassRoomSection
+                                        ?.length ??
+                                    0) ==
+                                0)
+                              buildNoItem(''),
+
                             // ---------- Title (text) of Vertical list ----------------//
                             const SizedBox(
                               height: 20,
@@ -214,18 +224,18 @@ class HomeScreen extends StatelessWidget {
                             Row(
                               children: const [
                                 Text(
-                                  'Incoming ',
+                                  'الأولاد ',
                                   style: TextStyle(
                                       fontSize: 22,
                                       fontWeight: FontWeight.bold),
                                 ),
-                                Text(
-                                  'Exams',
-                                  style: TextStyle(
-                                      fontSize: 22,
-                                      fontWeight: FontWeight.bold,
-                                      color: primaryColor),
-                                ),
+                                // Text(
+                                //   'Exams',
+                                //   style: TextStyle(
+                                //       fontSize: 22,
+                                //       fontWeight: FontWeight.bold,
+                                //       color: primaryColor),
+                                // ),
                               ],
                             ),
                             const SizedBox(
@@ -233,42 +243,44 @@ class HomeScreen extends StatelessWidget {
                             ),
 
                             // ------------------- Vertical List of incoming Exams -------------//
-                            ListView.separated(
-                                cacheExtent: 0,
-                                padding: EdgeInsets.zero,
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                scrollDirection: Axis.vertical,
-                                itemBuilder: (context, index) => buildExamItem(
-                                    isDegree: false,
-                                    context: context,
-                                    index: index,
-                                    image: homeModel?.data?.student?[index].image ==
-                                            null
-                                        ? 'https://img.freepik.com/free-vector/sunburst-background-questionnaire-with-pencil_23-2147593791.jpg?size=338&ext=jpg&uid=R76996913&ga=GA1.2.1634405249.1648830357'
-                                        : imageLink! +
-                                            (homeModel?.data?.student?[index]
-                                                    .image ??
-                                                ''),
-                                    imageWidth: 90,
-                                    text:
-                                        '${homeModel?.data?.student?[index].name}',
-                                    details: homeModel
-                                            ?.data?.student?[index].address ??
-                                        '',
-                                    date: (homeModel
-                                            ?.data?.student?[index].dateBirth ??
-                                        ''),
-                                    hight: 120,
-                                    isExam: true),
-                                separatorBuilder: (context, index) =>
-                                    const SizedBox(
-                                      height: 5,
-                                    ),
-                                itemCount: 2
-                                // (homeModel?.data?.student?.length ?? 0)
-
-                                ),
+                            if ((homeModel?.data?.student?.length ?? 0) > 0)
+                              ListView.separated(
+                                  cacheExtent: 0,
+                                  padding: EdgeInsets.zero,
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  scrollDirection: Axis.vertical,
+                                  itemBuilder: (context, index) => buildExamItem(
+                                      isDegree: false,
+                                      context: context,
+                                      index: index,
+                                      image: homeModel?.data?.student?[index]
+                                                  .image ==
+                                              null
+                                          ? 'https://img.freepik.com/free-vector/sunburst-background-questionnaire-with-pencil_23-2147593791.jpg?size=338&ext=jpg&uid=R76996913&ga=GA1.2.1634405249.1648830357'
+                                          : imageLink! +
+                                              (homeModel?.data?.student?[index]
+                                                      .image ??
+                                                  ''),
+                                      imageWidth: 90,
+                                      text:
+                                          '${homeModel?.data?.student?[index].name}',
+                                      details: homeModel
+                                              ?.data?.student?[index].address ??
+                                          '',
+                                      date: (homeModel?.data?.student?[index]
+                                              .dateBirth ??
+                                          ''),
+                                      hight: 120,
+                                      isExam: true),
+                                  separatorBuilder: (context, index) =>
+                                      const SizedBox(
+                                        height: 5,
+                                      ),
+                                  itemCount:
+                                      (homeModel?.data?.student?.length ?? 0)),
+                            if ((homeModel?.data?.student?.length ?? 0) == 0)
+                              buildNoItem('')
                           ],
                         ),
                       ),
